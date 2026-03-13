@@ -1,0 +1,104 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #0f172a, #020617);
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    max-width: 700px;
+}
+
+h1 {
+    font-size: 52px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #94a3b8;
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+#fact-box {
+    margin: 40px auto;
+    padding: 28px;
+    width: 520px;
+    background: #1e293b;
+    border-radius: 12px;
+    font-size: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+button {
+    margin-top: 10px;
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0px);
+}
+
+.env {
+    margin-top: 70px;
+    opacity: 0.9;
+}
+
+.env h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Table Styling */
+
+.env-table {
+    margin: auto;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.env-table th,
+.env-table td {
+    padding: 12px 22px;
+    font-size: 15px;
+}
+
+.env-table th {
+    color: #94a3b8;
+    font-weight: 600;
+    border-bottom: 1px solid #334155;
+}
+
+.env-table td {
+    border-bottom: 1px solid #1e293b;
+    text-align: center;
+}
+
+.env-table tbody tr:hover {
+    background: #1e293b;
+}
+
+#served-by {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #94a3b8;
+}
