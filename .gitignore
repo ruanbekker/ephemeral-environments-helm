@@ -1,3 +1,4 @@
+src/.venv/
 src/facts.db
 src/app/__pycache__
 src/static/style.bak1
