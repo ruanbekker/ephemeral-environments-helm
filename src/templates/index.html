@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Fact Generator</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Random Fact Generator</h1>
+
+<p class="subtitle">
+</p>
+
+<div id="fact-box">
+Press the button for a fact!
+<div id="served-by"></div>
+</div>
+
+<button onclick="getFact()">
+Give me a fact
+</button>
+
+<div class="env">
+
+<h3>Environment Details</h3>
+
+<table class="env-table">
+
+<thead>
+<tr>
+<th>PR</th>
+<th>Version</th>
+<th>Commit</th>
+<th>Pod</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>{{ env.pr }}</td>
+<td>{{ env.version }}</td>
+<td>{{ env.commit }}</td>
+<td>{{ env.pod_name }}</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+async function getFact() {
+
+    const res = await fetch("/fact")
+    const data = await res.json()
+
+    document.getElementById("fact-box").childNodes[0].nodeValue = data.fact
+    document.getElementById("served-by").innerText = "Served by: " + data.served_by
+}
+
+</script>
+
+</body>
+</html>
