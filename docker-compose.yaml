@@ -1,0 +1,14 @@
+services:
+  fact-app:
+    build:
+      context: .
+      dockerfile: cicd/docker/Dockerfile
+    container_name: fact-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      PR_NUMBER: "42"
+      VERSION: "1.3.2"
+      COMMIT: "abc123"
+      POD_NAME: "local-dev"
