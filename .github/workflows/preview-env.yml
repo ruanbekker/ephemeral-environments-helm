@@ -40,10 +40,10 @@ jobs:
     - name: Build image
       run: |
         IMAGE_ID=$(openssl rand -hex 8)
-        IMAGE=ttl.sh/${IMAGE_ID}-${{ steps.env.outputs.name }}:1h
+        IMAGE=ttl.sh/${IMAGE_ID}-${{ steps.env.outputs.name }}
 
-        docker build -f cicd/docker/Dockerfile -t $IMAGE .
-        docker push $IMAGE
+        docker build -f cicd/docker/Dockerfile -t ${IMAGE}:1h .
+        docker push ${IMAGE}:1h
 
         echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
