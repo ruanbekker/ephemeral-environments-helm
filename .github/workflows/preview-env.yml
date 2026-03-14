@@ -39,7 +39,8 @@ jobs:
 
     - name: Build image
       run: |
-        IMAGE=ttl.sh/1eca92b098ba9d96-${{ steps.env.outputs.name }}:1h
+        IMAGE_ID=$(openssl rand -hex 8)
+        IMAGE=ttl.sh/${IMAGE_ID}-${{ steps.env.outputs.name }}:1h
 
         docker build -f cicd/docker/Dockerfile -t $IMAGE .
         docker push $IMAGE
@@ -48,13 +49,13 @@ jobs:
 
     - name: Create namespace
       run: |
-        echo kubectl create namespace ${{ steps.env.outputs.namespace }} || true
+        kubectl create namespace ${{ steps.env.outputs.namespace }} || true
 
     - name: Deploy Helm
       run: |
-        echo helm upgrade --install \
+        helm upgrade --install \
         ${{ steps.env.outputs.name }} \
-        cicd/helm/fact-app \
+        cicd/helm \
         --namespace ${{ steps.env.outputs.namespace }} \
         --set image.repository=$IMAGE \
         --set env.PR_NUMBER=${{ github.event.pull_request.number }} \

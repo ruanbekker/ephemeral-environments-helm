@@ -32,9 +32,9 @@ jobs:
 
     - name: Delete Helm release
       run: |
-        echo helm uninstall ${{ steps.env.outputs.name }} \
+        helm uninstall ${{ steps.env.outputs.name }} \
         --namespace ${{ steps.env.outputs.name }} || true
 
     - name: Delete namespace
       run: |
-        echo kubectl delete namespace ${{ steps.env.outputs.name }} || true
+        kubectl delete namespace ${{ steps.env.outputs.name }} || true
