@@ -53,9 +53,20 @@ jobs:
 
     - name: Deploy Helm
       run: |
+        cat >> /tmp/preview.yaml << EOF
+        ingress:
+          enabled: true
+          className: "nginx"
+          hosts:
+            - host: ${{ steps.env.outputs.name }}-preview.int.cyrax.xyz
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+        EOF
         helm upgrade --install \
         ${{ steps.env.outputs.name }} \
         cicd/helm \
+        --values /tmp/preview.yaml \
         --namespace ${{ steps.env.outputs.namespace }} \
         --set image.repository=$IMAGE \
         --set env.PR_NUMBER=${{ github.event.pull_request.number }} \
@@ -75,7 +86,7 @@ jobs:
             Environment: **${name}**
 
             URL:
-            https://${name}.demo.yourdomain.com
+            https://${name}-preview.int.cyrax.xyz
 
             Image:
             ${process.env.IMAGE}
