@@ -64,16 +64,16 @@ jobs:
           const name = "${{ steps.env.outputs.name }}"
 
           const body = `
-🚀 Preview environment ready
+            🚀 Preview environment ready
 
-Environment: **${name}**
+            Environment: **${name}**
 
-URL:
-https://${name}.demo.yourdomain.com
+            URL:
+            https://${name}.demo.yourdomain.com
 
-Image:
-${process.env.IMAGE}
-`
+            Image:
+            ${process.env.IMAGE}
+          `
 
           github.rest.issues.createComment({
             issue_number: pr,
