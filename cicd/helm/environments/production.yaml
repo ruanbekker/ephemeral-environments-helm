@@ -1,0 +1,10 @@
+---
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: random-facts-app.int.cyrax.xyz
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+

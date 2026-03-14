@@ -1,0 +1,101 @@
+name: Preview Environment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  deploy-preview:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v4
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+    - name: Generate preview name
+      id: env
+      run: |
+        BRANCH=${GITHUB_HEAD_REF}
+        SHORT=$(echo $BRANCH | sed 's|task/||' | cut -c1-8)
+        PR=${{ github.event.pull_request.number }}
+
+        NAME="pr-${PR}-${SHORT}"
+
+        echo "name=$NAME" >> $GITHUB_OUTPUT
+        echo "namespace=$NAME" >> $GITHUB_OUTPUT
+
+    - name: Build image
+      run: |
+        IMAGE_ID=$(openssl rand -hex 8)
+        IMAGE=ttl.sh/${IMAGE_ID}-${{ steps.env.outputs.name }}
+
+        docker build -f cicd/docker/Dockerfile -t ${IMAGE}:1h .
+        docker push ${IMAGE}:1h
+
+        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+    - name: Create namespace
+      run: |
+        kubectl create namespace ${{ steps.env.outputs.namespace }} || true
+
+    - name: Deploy Helm
+      run: |
+        cat >> /tmp/preview.yaml << EOF
+        ingress:
+          enabled: true
+          className: "nginx"
+          hosts:
+            - host: ${{ steps.env.outputs.name }}-preview.int.cyrax.xyz
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+        EOF
+        helm upgrade --install \
+        ${{ steps.env.outputs.name }} \
+        cicd/helm \
+        --values /tmp/preview.yaml \
+        --namespace ${{ steps.env.outputs.namespace }} \
+        --set image.repository=$IMAGE \
+        --set image.tag=1h \
+        --set env.PR_NUMBER=${{ github.event.pull_request.number }} \
+        --set env.VERSION=preview \
+        --set env.COMMIT=${{ github.sha }}
+
+    - name: Post PR Comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const pr = context.issue.number
+          const name = "${{ steps.env.outputs.name }}"
+
+          const body = `
+            🚀 Preview environment ready
+
+            Environment: **${name}**
+
+            URL:
+            https://${name}-preview.int.cyrax.xyz
+
+            Image:
+            ${process.env.IMAGE}
+          `
+
+          github.rest.issues.createComment({
+            issue_number: pr,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          })

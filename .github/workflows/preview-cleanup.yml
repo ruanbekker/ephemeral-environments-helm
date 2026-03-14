@@ -1,0 +1,40 @@
+name: Cleanup Preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v4
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+    - name: Generate env name
+      id: env
+      run: |
+        BRANCH=${GITHUB_HEAD_REF}
+        SHORT=$(echo $BRANCH | sed 's|task/||' | cut -c1-8)
+        PR=${{ github.event.pull_request.number }}
+
+        NAME="pr-${PR}-${SHORT}"
+
+        echo "name=$NAME" >> $GITHUB_OUTPUT
+
+    - name: Delete Helm release
+      run: |
+        helm uninstall ${{ steps.env.outputs.name }} \
+        --namespace ${{ steps.env.outputs.name }} || true
+
+    - name: Delete namespace
+      run: |
+        kubectl delete namespace ${{ steps.env.outputs.name }} || true
