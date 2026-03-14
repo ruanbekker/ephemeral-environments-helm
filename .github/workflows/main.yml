@@ -1,0 +1,42 @@
+name: Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v4
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+    - name: Build image
+      run: |
+        IMAGE=ttl.sh/1eca92b098ba9d96-fact-app-prod:1h
+
+        docker build -f cicd/docker/Dockerfile -t $IMAGE .
+        docker push $IMAGE
+
+        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+    - name: Deploy
+      run: |
+        echo helm upgrade --install \
+        fact-app \
+        cicd/helm/fact-app \
+        --namespace production \
+        --create-namespace \
+        --set image.repository=$IMAGE \
+        --set env.VERSION=prod \
+        --set env.COMMIT=${{ github.sha }}
