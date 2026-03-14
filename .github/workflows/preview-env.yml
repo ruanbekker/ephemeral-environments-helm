@@ -82,15 +82,15 @@ jobs:
           const name = "${{ steps.env.outputs.name }}"
 
           const body = `
-            🚀 Preview environment ready
+            ## 🟢 Preview Environment Ready
 
-            Environment: **${name}**
+            🔎 **Test your changes before merging**
 
-            URL:
-            https://${name}-preview.int.cyrax.xyz
-
-            Image:
-            ${process.env.IMAGE}
+            | Property | Value |
+            |--------|--------|
+            | 🌍 URL | [http://${name}-preview.int.cyrax.xyz](http://${name}-preview.int.cyrax.xyz) |
+            | 📦 Image | \`${process.env.IMAGE}\` |
+            | 🧪 Environment | \`${name}\` |
           `
 
           github.rest.issues.createComment({
