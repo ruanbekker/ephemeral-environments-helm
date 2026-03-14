@@ -69,6 +69,7 @@ jobs:
         --values /tmp/preview.yaml \
         --namespace ${{ steps.env.outputs.namespace }} \
         --set image.repository=$IMAGE \
+        --set image.tag=1h \
         --set env.PR_NUMBER=${{ github.event.pull_request.number }} \
         --set env.VERSION=preview \
         --set env.COMMIT=${{ github.sha }}
