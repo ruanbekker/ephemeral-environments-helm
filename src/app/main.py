@@ -6,11 +6,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from app.database import get_random_fact, init_db
+from app.health import router as health_router
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(health_router)
 
 PR_NUMBER = os.getenv("PR_NUMBER", "local")
 VERSION = os.getenv("VERSION", "1.0.0")

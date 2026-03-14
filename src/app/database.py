@@ -41,3 +41,12 @@ def get_random_fact():
     conn.close()
 
     return fact
+
+def check_db():
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        conn.execute("SELECT 1")
+        conn.close()
+        return True
+    except Exception:
+        return False
